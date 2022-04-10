@@ -1,6 +1,6 @@
 
 
-```{r}
+```{r import and wrangle}
 getwd()
 
 library(dplyr)
@@ -13,6 +13,11 @@ rawsales$Date <- as.Date(rawsales$Date, format = "%m/%d/%Y")
 
 rawtaxcredit <- read.csv("./Data/Raw/taxcreditraw.csv", stringsAsFactors = TRUE)
 rawtaxcredit$Date <- as.Date(rawtaxcredit$Date, format = "%m/%d/%Y")
+
+combine <- merge(x = rawsales, y = rawtaxcredit, by = "Date", all = TRUE)
+
+write.csv(combine, row.names = FALSE,
+          file = "./Data/Processed/CombinedData.csv")
 
 ```
 
