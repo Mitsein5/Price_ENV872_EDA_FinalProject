@@ -5,8 +5,8 @@ output:
     fig_caption: yes
     number_sections: yes
 geometry: margin=2.54cm
-title: "Effect of Federal Tax Credit on Electric Vehicle Sales"
-subtitle: "Web address for GitHub repository"
+title: "Effect of Federal Tax Credit on Electric Vehicle Sales for Tesla and Chevrolet"
+subtitle: "https://github.com/Mitsein5/Price_ENV872_EDA_FinalProject.git"
 author: "Will Price"
 fontsize: 12pt
 mainfont: Times New Roman
@@ -40,33 +40,41 @@ mytheme <- theme_light(base_size = 14) +
   theme(axis.text = element_text(color = "dark green"), 
         legend.position = "top")
 theme_set(mytheme)
-
-# Load your datasets
-
 ```
 
-```{r import and wrangle, include=FALSE}
+# Rationale and Research Questions
+This study analyzes whether a federal tax incentive for purchasing electric vehicles has a statistically significant effect on sales numbers over time. 
 
+The U.S. federal government provides a tax credit of up to $7,500 for purchasers of new electric vehicles. This credit is apportioned for each manufacturer of vehicles (Tesla, Chevrolet, Nissan, etc.) Once a given manufacturer has sold 200,000 qualifying vehicles, the credit begins to taper off. The full credit amount can be claimed through the first quarter following the quarter in which the 200,000 vehicle limit is reached. Afterwards, the available credit begins to taper off. In the second and third quarters, 50% of the credit is available. In the fourth and fifth quarters, 25% is available. After the fifth quarter, no credit is available. 
+
+Two manufacturers have now exhausted the tax credit available for purchasers: Tesla and General Motors (hereinafter Chevrolet). This study aims to determine if the tapering of the tax credit has a statistically significant effect on vehicle sales. Data on tax credit availablity is scraped from the IRS website. Data on monthly vehicle sales is scraped from insideevs.com. It was important to obtain monthly sales figures because the credits degrade quarterly. 
+
+## Question 1: Does the federal tax credit have a statistically significant effect on electric vehicle sales? 
+
+\newpage
+
+# Dataset Information
+```{r import and wrangle, include=FALSE}
 rawsales <- read.csv("./Data/Raw/rawsales.csv", stringsAsFactors = TRUE)
 rawsales$Date <- as.Date(rawsales$Date, format = "%m/%d/%Y")
 
-rawtaxcredit <- read.csv("./Data/Raw/taxcreditraw.csv", stringsAsFactors = TRUE)
+rawtaxcredit <- read.csv("../Data/Raw/taxcreditraw.csv", stringsAsFactors = TRUE)
 rawtaxcredit$Date <- as.Date(rawtaxcredit$Date, format = "%m/%d/%Y")
 
 combine <- merge(x = rawsales, y = rawtaxcredit, by = "Date", all = TRUE)
 
 write.csv(combine, row.names = FALSE,
-          file = "./Data/Processed/CombinedData.csv")
+          file = "../Data/Processed/CombinedData.csv")
 
 ```
+Data on tax credit availablity was manually collected from the IRS website. Data on monthly vehicle sales was manually collected from InsideEVs.com. Sales data for Tesla and Chevrolet is not provided monthly in 2020 Q4; however, quarterly data is available for this. Monthly trends for 2020 Q4 were extrapolated by dividing the quarterly data evenly into the months of the quarter. 
 
-# Rationale and Research Questions
+Total sales for each manufacturer were tabulated from individual model sales. The quarterly tax credit amount availability was converted into a monthly format to match monthly sales figures. The two data sets were then combined to provide a single dataset containing the month, monthly sales figure, and the tax credit amount available for each manufacturer at that time. 
 
-
-
-\newpage
-
-# Dataset Information
+File Name | Description
+------------- | -------------
+RawSales.CSV | Raw sales data, broken down by month from 2017 to 2020, for Tesla and Chevrolet
+TaxCreditRaw.CSV | Available tax credit for purchaser, broken down by month for Tesla and Chevrolet
 
 
 
@@ -74,17 +82,70 @@ write.csv(combine, row.names = FALSE,
 
 # Exploratory Analysis 
 
+```{r data explore, include=FALSE}
+summary(combine)
 
+OverallSalesPlot <- 
+  ggplot(combine, aes(x = Date)) +
+  geom_line(aes(y = Total.Tesla, color = "red")) + 
+  geom_line(aes(y = Total.Chevrolet, color = "blue")) + 
+  xlab ("Date") +
+  ylab ("Vehicle Sales Per Month") +
+  labs(title = "Overall Sales Per Month", color = "Manufacturer\n") + 
+  scale_color_manual(labels = c("Chevrolet", "Tesla"), values = c("blue", "red")) +
+  scale_fill_discrete(name = "Manufacturer", labels = c("Tesla", "Chevrolet"))
+print(OverallSalesPlot)
 
+ChevroletPlot <-
+  ggplot(combine, aes(x = Date)) +
+  geom_line(aes(y = Total.Chevrolet, color = "blue")) + 
+  geom_line(aes(y = ChevroletCreditAvailable, color = "red")) + 
+  xlab ("Date") +
+  ylab ("Sales Per Month / Tax Credit Available") +
+  labs(title = "Chevrolet Total Sales and Tax Credit Availability", color = "Legend\n") + 
+  scale_color_manual(labels = c("Total Sales (vehicles)", "Tax Credit Available (dollars)"), values = c("blue", "red")) +
+  scale_fill_discrete(name = "Legend", labels = c("Total Sales", "Tax Credit Available"))
+print(ChevroletPlot)
+
+TeslaPlot <-
+  ggplot(combine, aes(x = Date)) +
+  geom_line(aes(y = Total.Tesla, color = "blue")) + 
+  geom_line(aes(y = TeslaCreditAvailable, color = "red")) + 
+  xlab ("Date") +
+  ylab ("Sales Per Month / Tax Credit Available") +
+  labs(title = "Tesla Total Sales and Tax Credit Availability", color = "Legend\n") + 
+  scale_color_manual(labels = c("Total Sales (vehicles)", "Tax Credit Available (dollars)"), values = c("blue", "red")) +
+  scale_fill_discrete(name = "Legend", labels = c("Total Sales", "Tax Credit Available"))
+print(TeslaPlot)
+```
+Insert exploratory visualizations of your dataset. This may include, but is not limited to, graphs illustrating the distributions of variables of interest and/or maps of the spatial context of your dataset. Format your R chunks so that graphs are displayed but code is not displayed. Accompany these graphs with text sections that describe the visualizations and provide context for further analyses.
+
+Each figure should be accompanied by a caption, and each figure should be referenced within the text. 
+
+Scope: think about what information someone might want to know about the dataset before analyzing it statistically. How might you visualize this information? 
 \newpage
 
 # Analysis
 
+```{r data analysis}
 
+cor(combine$Total.Tesla, combine$TeslaCreditAvailable)
+cor(combine$Total.Chevrolet, combine$ChevroletCreditAvailable)
 
-## Question 1: <insert specific question here and add additional subsections for additional questions below, if needed>
+Tesla.LM <- lm(Total.Tesla ~ TeslaCreditAvailable, data = combine)
+summary(Tesla.LM)
 
-## Question 2: 
+Chevrolet.LM <- lm(Total.Chevrolet ~ ChevroletCreditAvailable, data = combine)
+summary(Chevrolet.LM)
+
+Chevrolet.LM2 <- lm(Total.Chevrolet ~ ChevroletCreditAvailable + Total.Tesla, data = combine)
+summary(Chevrolet.LM2)
+```
+
+Insert visualizations and text describing your main analyses. Format your R chunks so that graphs are displayed but code and other output is not displayed. Instead, describe the results of any statistical tests in the main text (e.g., "Variable x was significantly different among y groups (ANOVA; df = 300, F = 5.55, p < 0.0001)"). Each paragraph, accompanied by one or more visualizations, should describe the major findings and how they relate to the question and hypotheses. Divide this section into subsections, one for each research question.
+
+Each figure should be accompanied by a caption, and each figure should be referenced within the text
+
 
 
 
@@ -93,8 +154,7 @@ write.csv(combine, row.names = FALSE,
 
 # Summary and Conclusions
 
+Summarize your major findings from your analyses in a few paragraphs. What conclusions do you draw from your findings? Relate your findings back to the original research questions and rationale.
 
 \newpage
 
-# References
-<add references here if relevant, otherwise delete this section> 
