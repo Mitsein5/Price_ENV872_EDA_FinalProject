@@ -1,73 +1,15 @@
----
-output: 
-  pdf_document:
-    keep_tex: yes
-    fig_caption: yes
-    number_sections: yes
-geometry: margin=2.54cm
-title: "Effect of Federal Tax Credit on Electric Vehicle Sales"
-subtitle: "Web address for GitHub repository"
-author: "Will Price"
-fontsize: 12pt
-mainfont: Times New Roman
+```{r data analysis}
 
----
+cor(combine$Total.Tesla, combine$TeslaCreditAvailable)
+cor(combine$Total.Chevrolet, combine$ChevroletCreditAvailable)
 
-\newpage
-\tableofcontents 
-\newpage
-\listoftables 
-\newpage
-\listoffigures 
-\newpage
+Tesla.LM <- lm(Total.Tesla ~ TeslaCreditAvailable, data = combine)
+summary(Tesla.LM)
 
-```{r setup, include=FALSE}
-# Set your working directory
+Chevrolet.LM <- lm(Total.Chevrolet ~ ChevroletCreditAvailable, data = combine)
+summary(Chevrolet.LM)
 
-# Load your packages
-
-# Set your ggplot theme
-
-# Load your datasets
-
+Chevrolet.LM2 <- lm(Total.Chevrolet ~ ChevroletCreditAvailable + Total.Tesla, data = combine)
+summary(Chevrolet.LM2)
 ```
 
-
-# Rationale and Research Questions
-
-
-
-\newpage
-
-# Dataset Information
-
-
-
-\newpage
-
-# Exploratory Analysis 
-
-
-
-\newpage
-
-# Analysis
-
-
-
-## Question 1: <insert specific question here and add additional subsections for additional questions below, if needed>
-
-## Question 2: 
-
-
-
-
-\newpage
-
-# Summary and Conclusions
-
-
-\newpage
-
-# References
-<add references here if relevant, otherwise delete this section> 
