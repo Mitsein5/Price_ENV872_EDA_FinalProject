@@ -1,73 +1,38 @@
----
-output: 
-  pdf_document:
-    keep_tex: yes
-    fig_caption: yes
-    number_sections: yes
-geometry: margin=2.54cm
-title: "Effect of Federal Tax Credit on Electric Vehicle Sales"
-subtitle: "Web address for GitHub repository"
-author: "Will Price"
-fontsize: 12pt
-mainfont: Times New Roman
 
----
+```{r data explore, include=FALSE}
+summary(combine)
 
-\newpage
-\tableofcontents 
-\newpage
-\listoftables 
-\newpage
-\listoffigures 
-\newpage
+OverallSalesPlot <- 
+  ggplot(combine, aes(x = Date)) +
+  geom_line(aes(y = Total.Tesla, color = "red")) + 
+  geom_line(aes(y = Total.Chevrolet, color = "blue")) + 
+  xlab ("Date") +
+  ylab ("Vehicle Sales Per Month") +
+  labs(title = "Overall Sales Per Month", color = "Manufacturer\n") + 
+  scale_color_manual(labels = c("Chevrolet", "Tesla"), values = c("blue", "red")) +
+  scale_fill_discrete(name = "Manufacturer", labels = c("Tesla", "Chevrolet"))
+print(OverallSalesPlot)
 
-```{r setup, include=FALSE}
-# Set your working directory
+ChevroletPlot <-
+  ggplot(combine, aes(x = Date)) +
+  geom_line(aes(y = Total.Chevrolet, color = "blue")) + 
+  geom_line(aes(y = ChevroletCreditAvailable, color = "red")) + 
+  xlab ("Date") +
+  ylab ("Sales Per Month / Tax Credit Available") +
+  labs(title = "Chevrolet Total Sales and Tax Credit Availability", color = "Legend\n") + 
+  scale_color_manual(labels = c("Total Sales (vehicles)", "Tax Credit Available (dollars)"), values = c("blue", "red")) +
+  scale_fill_discrete(name = "Legend", labels = c("Total Sales", "Tax Credit Available"))
+print(ChevroletPlot)
 
-# Load your packages
-
-# Set your ggplot theme
-
-# Load your datasets
-
+TeslaPlot <-
+  ggplot(combine, aes(x = Date)) +
+  geom_line(aes(y = Total.Tesla, color = "blue")) + 
+  geom_line(aes(y = TeslaCreditAvailable, color = "red")) + 
+  xlab ("Date") +
+  ylab ("Sales Per Month / Tax Credit Available") +
+  labs(title = "Tesla Total Sales and Tax Credit Availability", color = "Legend\n") + 
+  scale_color_manual(labels = c("Total Sales (vehicles)", "Tax Credit Available (dollars)"), values = c("blue", "red")) +
+  scale_fill_discrete(name = "Legend", labels = c("Total Sales", "Tax Credit Available"))
+print(TeslaPlot)
 ```
 
-
-# Rationale and Research Questions
-
-
-
-\newpage
-
-# Dataset Information
-
-
-
-\newpage
-
-# Exploratory Analysis 
-
-
-
-\newpage
-
-# Analysis
-
-
-
-## Question 1: <insert specific question here and add additional subsections for additional questions below, if needed>
-
-## Question 2: 
-
-
-
-
-\newpage
-
-# Summary and Conclusions
-
-
-\newpage
-
-# References
-<add references here if relevant, otherwise delete this section> 

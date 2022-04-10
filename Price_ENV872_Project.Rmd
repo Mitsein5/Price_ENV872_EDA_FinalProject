@@ -22,16 +22,43 @@ mainfont: Times New Roman
 \newpage
 
 ```{r setup, include=FALSE}
+
 # Set your working directory
+setwd("E:/Will/Documents/NSOE/Spring2022classes/872 Data Analysis/Environmental_Data_Analytics_2022/PriceFinalProject/Price_ENV872_EDA_FinalProject")
 
 # Load your packages
+library(dplyr)
+library(tidyverse)
+library(lubridate)
+library(tidyr)
+library(knitr)
+library(ggplot2)
+opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE)
 
 # Set your ggplot theme
+mytheme <- theme_light(base_size = 14) +
+  theme(axis.text = element_text(color = "dark green"), 
+        legend.position = "top")
+theme_set(mytheme)
 
 # Load your datasets
 
 ```
 
+```{r import and wrangle, include=FALSE}
+
+rawsales <- read.csv("./Data/Raw/rawsales.csv", stringsAsFactors = TRUE)
+rawsales$Date <- as.Date(rawsales$Date, format = "%m/%d/%Y")
+
+rawtaxcredit <- read.csv("./Data/Raw/taxcreditraw.csv", stringsAsFactors = TRUE)
+rawtaxcredit$Date <- as.Date(rawtaxcredit$Date, format = "%m/%d/%Y")
+
+combine <- merge(x = rawsales, y = rawtaxcredit, by = "Date", all = TRUE)
+
+write.csv(combine, row.names = FALSE,
+          file = "./Data/Processed/CombinedData.csv")
+
+```
 
 # Rationale and Research Questions
 
